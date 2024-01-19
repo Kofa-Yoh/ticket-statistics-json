@@ -7,6 +7,7 @@ import com.kotkina.services.TicketStatistics;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 
 public class TicketStatisticsDemo {
@@ -32,9 +33,16 @@ public class TicketStatisticsDemo {
 
         TicketStatistics statistics = new TicketStatistics();
         List<Ticket> tickets = content.getTickets();
-        System.out.println("Минимальное время полета между городами Владивосток и Тель-Авив: " +
-                statistics.getMinFlightTime(tickets, ORIGIN_CODE, DESTINATION_CODE) + " мин.");
-        System.out.println("Разница между средней ценой и медианой для полета между городами  Владивосток и Тель-Авив: " +
+
+        Map<String, Long> minFlightTime = statistics.getMinFlightTime(tickets, ORIGIN_CODE, DESTINATION_CODE);
+        StringBuilder mapOutput = new StringBuilder();
+        for (Map.Entry<String, Long> entry : minFlightTime.entrySet()) {
+            mapOutput.append(String.format("%s - %s мин.%n", entry.getKey(), entry.getValue()));
+        }
+        System.out.println("Минимальное время полета между городами Владивосток и Тель-Авив для авиакомпаний:" + System.lineSeparator() +
+                mapOutput);
+
+        System.out.println("Разница между средней ценой и медианой для полета между городами  Владивосток и Тель-Авив: " + System.lineSeparator() +
                 statistics.getAverageAndMedianPricesDifference(tickets, ORIGIN_CODE, DESTINATION_CODE));
     }
 }

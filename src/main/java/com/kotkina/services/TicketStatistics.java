@@ -7,17 +7,22 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class TicketStatistics {
 
-    public long getMinFlightTime(List<Ticket> tickets, String origin, String destination) {
+    public Map<String, Long> getMinFlightTime(List<Ticket> tickets, String origin, String destination) {
         checkParams(tickets, origin, destination);
 
-        return tickets.stream()
+        Map<String, Long> flightMap = tickets.stream()
                 .filter(ticket -> ticket.getOrigin().equals(origin) && ticket.getDestination().equals(destination))
-                .map(ticket -> getFlightTime(ticket))
-                .min(Long::compare)
-                .orElseThrow(() -> new NoSuchTicketException("Билеты с заданными параметрами не найдены."));
+                .collect(Collectors.toMap(
+                        Ticket::getCarrier, ticket -> getFlightTime(ticket), Math::min));
+        if (flightMap.isEmpty()) {
+            throw new NoSuchTicketException("Билеты с заданными параметрами не найдены.");
+        }
+        return flightMap;
     }
 
     public double getAverageAndMedianPricesDifference(List<Ticket> tickets, String origin, String destination) {
